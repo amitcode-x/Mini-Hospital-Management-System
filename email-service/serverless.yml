@@ -1,0 +1,23 @@
+service: hms-email-service
+frameworkVersion: "4"
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: python3.10
+  region: ap-south-1
+
+functions:
+  sendEmail:
+    handler: handler.send
+    events:
+      - httpApi:
+          path: /send-email
+          method: POST
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 3005

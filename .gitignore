@@ -1,0 +1,50 @@
+# =========================
+# Python / Django
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.sqlite3
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Django
+*.log
+staticfiles/
+media/
+
+# =========================
+# Environment Variables
+# =========================
+.env
+backend/.env
+email-service/.env
+
+# =========================
+# Node / React
+# =========================
+node_modules/
+dist/
+build/
+
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# =========================
+# Serverless
+# =========================
+.serverless/
+
+
+# Google OAuth credentials
+**/credentials.json
+
