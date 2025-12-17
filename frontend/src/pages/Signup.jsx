@@ -11,6 +11,7 @@ export default function Signup({ switchToLogin }) {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -20,12 +21,26 @@ export default function Signup({ switchToLogin }) {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setLoading(true);
 
     try {
       await axiosClient.post("/auth/signup/", form);
       setSuccess("Signup successful! Please login.");
+      setForm({
+        username: "",
+        email: "",
+        password: "",
+        role: "PATIENT",
+      });
     } catch (err) {
-      setError("Signup failed. Username or email may already exist.");
+      if (err.response && err.response.data) {
+        // Show exact backend validation error
+        setError(JSON.stringify(err.response.data));
+      } else {
+        setError("Signup failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,19 +58,23 @@ export default function Signup({ switchToLogin }) {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
+
+          {/* Username */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
               Username
             </label>
             <input
               name="username"
-              placeholder="Enter username"
+              value={form.username}
               onChange={handleChange}
               required
+              placeholder="Enter username"
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
 
+          {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
               Email
@@ -63,13 +82,15 @@ export default function Signup({ switchToLogin }) {
             <input
               name="email"
               type="email"
-              placeholder="Enter email"
+              value={form.email}
               onChange={handleChange}
               required
+              placeholder="Enter email"
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
 
+          {/* Password */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
               Password
@@ -77,19 +98,22 @@ export default function Signup({ switchToLogin }) {
             <input
               name="password"
               type="password"
-              placeholder="Create password"
+              value={form.password}
               onChange={handleChange}
               required
+              placeholder="Create password (min 8 chars)"
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
 
+          {/* Role */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
               Role
             </label>
             <select
               name="role"
+              value={form.role}
               onChange={handleChange}
               className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
             >
@@ -98,28 +122,31 @@ export default function Signup({ switchToLogin }) {
             </select>
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold transition duration-300"
+            disabled={loading}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold transition duration-300 disabled:opacity-60"
           >
-            Signup
+            {loading ? "Creating account..." : "Signup"}
           </button>
         </form>
 
-        {/* Messages */}
+        {/* Error */}
         {error && (
-          <p className="text-red-500 text-sm text-center mt-4">
+          <p className="text-red-500 text-sm text-center mt-4 break-words">
             {error}
           </p>
         )}
 
+        {/* Success */}
         {success && (
           <p className="text-green-600 text-sm text-center mt-4">
             {success}
           </p>
         )}
 
-        {/* Switch to Login */}
+        {/* Switch */}
         <p className="text-center text-sm text-gray-600 mt-6">
           Already have an account?{" "}
           <button
